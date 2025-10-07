@@ -95,11 +95,9 @@ def load_input():
     # Restructuring the column indexes
     # Fill out this part. You can use column access to get only the
     # columns we are interested in using the NEW_COLUMNS variable above.
-    # Make sure you return the columns in the new order.
-    # TODO
-
-    # When you are done, remove the next line...
-    raise NotImplementedError
+    df_2019 = df_2019[NEW_COLUMNS]
+    df_2020 = df_2020[NEW_COLUMNS]
+    df_2021 = df_2021[NEW_COLUMNS]
 
     # ...and keep this line to return the dataframes.
     return [df_2019, df_2020, df_2021]
@@ -134,11 +132,36 @@ def q2(dfs):
     correct by inspecting the file part1-answers.txt.
     """
     # Check:
-    # - that all three dataframes have the same shape
-    # - the number of rows
-    # - the number of columns
+    # - that all three dataframes have the same shape --> done
+    # - the number of rows --> done
+    # - the number of columns --> done
     # - the columns are listed in the correct order
-    raise NotImplementedError
+    
+    # Check if all dataframes are the same shape
+    if not (dfs[0].shape == dfs[1].shape == dfs[2].shape):
+        return False
+
+    # Check if all dataframes have the same number of rows
+    if not (len(dfs[0]) == len(dfs[1]) == len(dfs[2])):
+        return False
+
+    # Check if all dataframes have the same number of columns
+    if not (len(dfs[0].columns) == len(dfs[1].columns) == len(dfs[2].columns)):
+        return False
+    
+    # Check to make sure all DFs have the NEW_COLUMNS only
+    for df in dfs:
+        for column in df.columns:
+            if column not in NEW_COLUMNS:
+                return False
+    
+    # Check to make sure that columns show up in the same order as NEW_COLUMNS
+    for i in range(0,len(NEW_COLUMNS)):
+        for df in dfs:
+            if df.columns[i] != NEW_COLUMNS[i]:
+                return False
+            
+    return True
 
 """
 ===== Interlude: Checking your output so far =====
@@ -179,7 +202,20 @@ def q3(dfs):
     # - that the set of university names in each year is the same
     # Return:
     # - True if they are the same, and False otherwise.
-    raise NotImplementedError
+    
+    # For each dataframe
+    unique_unis = dfs[0]["university"].unique().tolist()
+    print(f"unique_unis df[0]: {unique_unis}")
+    
+    for i in range(1,len(dfs)):
+        
+        print(f"unique_unis df[{i}]: {dfs[i]['university'].unique().tolist()}")
+        
+        if set(dfs[i]["university"].unique().tolist()) != set(unique_unis):
+            print(f"Difference found in df[{i}]: {set(dfs[i]['university'].unique().tolist()) - set(unique_unis)}")
+            return False
+        
+    return True
 
 """
 3b (commentary).
@@ -187,7 +223,9 @@ Did the checks pass or fail?
 Comment below and explain why.
 
 === ANSWER Q3b BELOW ===
-
+The checks failed, this is because the 2019 CSV (or whatever dataframe I processed first) 
+does not have ['KTH Royal Institute of Technology', 'Sungkyunkwan University(SKKU)', 
+'The Hong Kong Polytechnic University'] which the second dataframe has.
 === END OF Q3b ANSWER ===
 """
 
@@ -214,11 +252,13 @@ Hint:
 
 def q4(dfs):
     # Sample 5 rows from each dataframe
+    df_2021_sample = dfs[2].sample(5)
+    
     # Print out the samples
-    raise NotImplementedError
+    print(f"2021 Sample: {df_2021_sample}")
 
     # Answer as a list of 5 university names
-    return []
+    return df_2021_sample["university"].tolist()
 
 """
 Once you have implemented this part,
@@ -230,13 +270,13 @@ and 3 weaknesses of this dataset.
 
 === ANSWER Q4b BELOW ===
 Strengths:
-1.
-2.
+1. This dataset does have a variety of unis from many different countries.
+2. Various columns that represent and assist in giving overall score (academic rep, employer rep, etc).
 
 Weaknesses:
-1.
-2.
-3.
+1. Some countries are heavily represented over others, resulting in less variety from specific parts of the world and sampling results in often American or European unis.
+2. Some of the scores don't really seem to make sense, such as Seoul National University with very lower scores but quite a high overall score.
+3. Although many rows and a wide variety of countries, still not many unique unis (~75?), low variety in unis.
 === END OF Q4b ANSWER ===
 """
 
@@ -261,17 +301,12 @@ Example: if there are 5 non-null values in the first column, 3 in the second, 4 
 """
 
 def q5a(dfs):
-    # TODO
-    raise NotImplementedError
-    # Remember to return the list here
-    # (Since .info() does not return any values,
-    # for this part, you will need to copy and paste
-    # the output as a hardcoded list.)
+    print(f"2021 NULLS: {dfs[2].info()}")    
+    return [100,100,100,100,100,100,100,100]
+
 
 def q5b(dfs):
-    # TODO
-    raise NotImplementedError
-    # Remember to return the list here
+    return [int(dfs[2][column].count()) for column in dfs[2].columns]
 
 """
 5c.
@@ -281,9 +316,7 @@ We will use this in the unit tests below.
 """
 
 def q5c():
-    raise NotImplementedError
-    # TODO: fill this in with the expected number
-    num_non_null = 0
+    num_non_null = 100
     return num_non_null
 
 """
@@ -312,29 +345,29 @@ from each unit test (function beginning with `test_`).
 Then, run `pytest part1.py` in the terminal.
 """
 
-@pytest.mark.skip
+#@pytest.mark.skip
 def test_q1():
     dfs = load_input()
     assert len(dfs) == 3
     assert all([isinstance(df, pd.DataFrame) for df in dfs])
 
-@pytest.mark.skip
+#@pytest.mark.skip
 def test_q2():
     dfs = load_input()
     assert q2(dfs)
 
-@pytest.mark.skip
+@pytest.mark.xfail
 def test_q3():
     dfs = load_input()
     assert q3(dfs)
 
-@pytest.mark.skip
+#@pytest.mark.skip
 def test_q4():
     dfs = load_input()
     samples = q4(dfs)
     assert len(samples) == 5
 
-@pytest.mark.skip
+#@pytest.mark.skip
 def test_q5():
     dfs = load_input()
     answers = q5a(dfs) + q5b(dfs)
@@ -347,14 +380,14 @@ def test_q5():
 6a. Are there any tests which fail?
 
 === ANSWER Q6a BELOW ===
-
+Yes, q3 failed. Every other test succeeded.
 === END OF Q6a ANSWER ===
 
 6b. For each test that fails, is it because your code
 is wrong or because the test is wrong?
 
 === ANSWER Q6b BELOW ===
-
+Neither, q3 fails because the 2019 and 2020 dataframes don't share the same universities.
 === END OF Q6b ANSWER ===
 
 IMPORTANT: for any failing tests, if you think you have
@@ -371,8 +404,7 @@ Please include expected failures (@pytest.mark.xfail).
 """
 
 def q6c():
-    # TODO
-    raise NotImplementedError
+    return 1
 
 """
 ===== End of interlude =====
