@@ -421,9 +421,11 @@ As your answer to this part, return the number of columns in each dataframe afte
 """
 
 def q7(dfs):
-    # TODO
-    raise NotImplementedError
-    # Remember to return the list here
+    dfs[0]['year'] = '2019'
+    dfs[1]['year'] = '2020'
+    dfs[2]['year'] = '2021'
+    
+    return [len(dfs[0].columns), len(dfs[1].columns), len(dfs[2].columns)]
 
 """
 8a.
@@ -433,17 +435,21 @@ As your answer, return the count for "USA" in 2021.
 """
 
 def q8a(dfs):
-    # Enter Code here
-    # TODO
-    raise NotImplementedError
-    # Remember to return the count here
+    # Count of universities in each region for each year
+    for df in dfs:
+        region_counts = df['region'].value_counts()
+        print(f"region_counts: {region_counts}")
+
+    # Return the count for "USA" in 2021
+    return int(dfs[2]['region'].value_counts().get("USA", 0))
 
 """
 8b.
 Do you notice some trend? Comment on what you observe and why might that be consistent throughout the years.
 
 === ANSWER Q8b BELOW ===
-
+The top 5 countries never change, I think this might be consistent throughout the years as maybe there's
+more information on these cities or out of availability/noticeability these regions rank highly consistently.
 === END OF Q8b ANSWER ===
 """
 
@@ -459,10 +465,9 @@ The list should contain 5 elements.
 """
 
 def q9(dfs):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
-    # Return the list here
+    df_2021 = dfs[2]
+    attributes = ['academic reputation', 'employer reputation', 'faculty student', 'citations per faculty', 'overall score']
+    return [df_2021[attr].mean() for attr in attributes]
 
 """
 10.
@@ -478,7 +483,13 @@ def q10_helper(dfs):
     # Enter code here
     # TODO
     # Placeholder for the avg_2021 dataframe
-    avg_2021 = pd.DataFrame()
+    df_2021 = dfs[2]
+    # Exclude 'rank' and 'year' columns
+    numeric_cols = df_2021.select_dtypes(include='number').columns.tolist()
+    # Exclude 'rank' and 'year' if present
+    cols_to_avg = [col for col in numeric_cols if col not in ['rank', 'year']]
+    
+    avg_2021 = df_2021.groupby('region')[cols_to_avg].mean().reset_index()
     return avg_2021
 
 def q10(avg_2021):
@@ -489,9 +500,8 @@ def q10(avg_2021):
     As your answer, simply return the number of rows printed.
     (That is, return the integer 5)
     """
-    # Enter code here
-    raise NotImplementedError
-    # Return 5
+    print(avg_2021.head())
+    return 5
 
 """
 ===== Questions 11-14: Exploring the avg_2021 dataframe =====
