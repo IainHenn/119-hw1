@@ -12,6 +12,8 @@ to report which one is faster.
 import part1
 import time
 import matplotlib.pyplot as plt
+import pandas as pd
+import os
 
 """
 === Questions 1-5: Throughput and Latency Helpers ===
@@ -346,18 +348,26 @@ See if you can compute this using Pandas functions only.
 def load_input(filename):
     # Return a dataframe containing the population data
     # **Clean the data here**
-    raise NotImplementedError
+    pop_df = pd.read_csv(filename)
+    pop_df = pop_df[pop_df["Entity"] != "OWID_WRL"]
+    pop_df = pop_df[~pop_df["Entity"].isin(["North America", "South America", "Africa", "Antarctica", "Europe", "Australia", "Asia"])]
+    return pop_df
 
 def population_pipeline(df):
     # Input: the dataframe from load_input()
-    # Return a list of min, median, max, mean, and standard deviation
-    raise NotImplementedError
+    return [df.describe().loc["min"]["Population (historical)"],
+            df.describe().loc["50%"]["Population (historical)"],
+            df.describe().loc["max"]["Population (historical)"],
+            df.describe().loc["mean"]["Population (historical)"],
+            df.describe().loc["std"]["Population (historical)"]]
 
 def q6():
     # As your answer to this part,
+    df = load_input("data/population.csv")
     # call load_input() and then population_pipeline()
+    result = population_pipeline(df)
     # Return a list of min, median, max, mean, and standard deviation
-    raise NotImplementedError
+    return result
 
 """
 7. Varying the input size
@@ -385,17 +395,32 @@ The input CSV file will have 600 rows, but the DataFrame (after your cleaning) m
 """
 
 def load_input_small():
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    if os.path.exists("data/population-small.csv"):
+        df = load_input("data/population-small.csv")
+    else:
+        df = df.head(600)
+    return df
 
 def load_input_medium():
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    if os.path.exists("data/population-medium.csv"):
+        df = load_input("data/population-medium.csv")
+    else:
+        df = df.head(6000)
+    return df
 
 def load_input_large():
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    return df
 
 def load_input_single_row():
-    # This is the pipeline we will use for latency.
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    if os.path.exists("data/population-single-row.csv"):
+        df = load_input("data/population-single-row.csv")
+    else:
+        df = df.head(1)
+    return df
 
 def q7():
     # Don't modify this part
@@ -427,16 +452,21 @@ that you think is meaningful.
 """
 
 def baseline_small():
-    raise NotImplementedError
+    df = load_input_small()
+    return population_pipeline(df)
 
 def baseline_medium():
-    raise NotImplementedError
+    df = load_input_medium()
+    return population_pipeline(df)
 
 def baseline_large():
-    raise NotImplementedError
+    df = load_input_large()
+    return population_pipeline(df)
 
 def baseline_latency():
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    df = df.head(2)
+    return population_pipeline(df)
 
 def q8():
     # Don't modify this part

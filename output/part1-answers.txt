@@ -1,7 +1,7 @@
 q1,3
 q2,True
 q3a,False
-q4,['University of St Andrews', 'Shanghai Jiao Tong University', 'University of Pennsylvania', 'National Taiwan University (NTU)', 'The Chinese University of Hong Kong (CUHK)']
+q4,['The University of Melbourne', 'McGill University', 'California Institute of Technology (Caltech)', 'The University of Sydney', 'University of Birmingham']
 q5a,[100, 100, 100, 100, 100, 100, 100, 100]
 q5b,[100, 100, 100, 100, 100, 100, 100, 100]
 q5c,100
@@ -20,17 +20,19 @@ Name: 13, dtype: object
 q12,Argentina
 q13,output/part1-13a.png
 q14a,output/part1-14a.png
-q15,                                          university  overall score_x  overall score_y  overall score
-0        Massachusetts Institute of Technology (MIT)            100.0            100.0          100.0
-1                                Stanford University             98.6             98.4           98.4
-2                                 Harvard University             98.5             97.4           97.4
-3       California Institute of Technology (Caltech)             97.2             96.9           96.9
-4                               University of Oxford             96.8             97.2           97.2
-5                            University of Cambridge             95.6             95.0           95.0
-6  ETH Zurich - Swiss Federal Institute of Techno...             95.3             95.9           95.9
-7                            Imperial College London             93.3             94.1           94.1
-8                              University of Chicago             93.2             92.0           92.0
-9                                                UCL             92.9             94.8           94.8
+q15,                                          university  ...  overall score
+0        Massachusetts Institute of Technology (MIT)  ...          100.0
+1                                Stanford University  ...           98.4
+2                                 Harvard University  ...           97.4
+3       California Institute of Technology (Caltech)  ...           96.9
+4                               University of Oxford  ...           97.2
+5                            University of Cambridge  ...           95.0
+6  ETH Zurich - Swiss Federal Institute of Techno...  ...           95.9
+7                            Imperial College London  ...           94.1
+8                              University of Chicago  ...           92.0
+9                                                UCL  ...           94.8
+
+[10 rows x 4 columns]
 q16,['university', 'overall score 2019', 'overall score 2020', 'overall score 2021']
 q17,output/part1-17a.png
 q18,output/part1-18.png
