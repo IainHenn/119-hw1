@@ -513,7 +513,8 @@ As your answer to this part, return the first row of the sorted dataframe.
 """
 
 def q11(avg_2021):
-    raise NotImplementedError
+    avg_2021_sorted = avg_2021.sort_values(by="overall score", ascending=False)
+    return avg_2021_sorted.iloc[0]
 
 """
 12a.
@@ -539,8 +540,7 @@ and the name of one country/region that went down in the rankings.
 """
 
 def q12a(avg_2021):
-    raise NotImplementedError
-    return ("TODO", "TODO")
+    return ("Argentina")
 
 """
 12b.
@@ -548,7 +548,7 @@ Comment on why the country above is at the top of the list.
 (Note: This is an open-ended question.)
 
 === ANSWER Q12b BELOW ===
-
+I'm not sure, maybe because of conflict in the region? Possibly something going on outside of the universities in the region. 
 === END OF Q12b ANSWER ===
 """
 
@@ -566,17 +566,21 @@ As the answer to this part, return the name of the plot you saved.
 import matplotlib.pyplot as plt
 
 def q13a(avg_2021):
-    # Plot the box and whisker plot
-    # TODO
-    raise NotImplementedError
-    # return "output/part1-13a.png"
+    # Plot the box and whisker plot for each attribute (column) in avg_2021
+    avg_2021.plot(kind='box', figsize=(10, 6))
+    plt.title("Box and Whisker Plot of Columns in avg_2021")
+    plt.ylabel("Values")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("output/part1-13a.png")
+    return "output/part1-13a.png"
 
 """
 b. Do you observe any anomalies in the box and whisker
 plot?
 
 === ANSWER Q13b BELOW ===
-
+I notice that some of the attributes have a lot of variety, but overall score has a pretty small deviation and is commonly quite high.
 === END OF Q13b ANSWER ===
 """
 
@@ -591,16 +595,28 @@ As the answer to this part, return the name of the plot you saved.
 """
 
 def q14a(avg_2021):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
-    # return "output/part1-14a.png"
+    fig, axes = plt.subplots(2, 1, figsize=(10, 12))
 
+    # Scatter plot for academic reputation vs overall score
+    axes[0].scatter(avg_2021['academic reputation'], avg_2021['overall score'], color='blue', alpha=0.7)
+    axes[0].set_title('Academic Reputation vs Overall Score')
+    axes[0].set_xlabel('Academic Reputation')
+    axes[0].set_ylabel('Overall Score')
+
+    # Scatter plot for faculty student vs overall score
+    axes[1].scatter(avg_2021['faculty student'], avg_2021['overall score'], color='green', alpha=0.7)
+    axes[1].set_title('Faculty Student vs Overall Score')
+    axes[1].set_xlabel('Faculty Student')
+    axes[1].set_ylabel('Overall Score')
+
+    plt.tight_layout()
+    plt.savefig("output/part1-14a.png")
+    return "output/part1-14a.png"
 """
 Do you observe any general trend?
 
 === ANSWER Q14b BELOW ===
-
+The trend is vaguely exponential for both scatter plots.
 === END OF Q14b ANSWER ===
 
 ===== Questions 15-20: Exploring the data further =====
@@ -622,16 +638,18 @@ As your answer, return the shape of the new dataframe.
 """
 
 def q15_helper(dfs):
-    # Return the new dataframe
-    # TODO
-    # Placeholder:
-    top_10 = pd.DataFrame()
-    return top_10
+    # Sort each dataframe by overall score in descending order
+    dfs = [df.sort_values(by="overall score", ascending=False) for df in dfs]
+
+    
+    # Merge the dataframes
+    top_10 = dfs[0][["university", "overall score"]]
+    top_10 = pd.merge(top_10, dfs[1][["university", "overall score"]], on="university", how="inner")
+    top_10 = pd.merge(top_10, dfs[2][["university", "overall score"]], on="university", how="inner")
+    return top_10.iloc[0:10]
 
 def q15(top_10):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
+    return top_10
 
 """
 16.
@@ -645,10 +663,18 @@ As your answer, return the new column names as a list.
 """
 
 def q16(top_10):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
-    # return list(df.columns)
+    top_10.rename(columns={
+
+    "overall score_x": "overall score 2019",
+
+        "overall score_y": "overall score 2020",
+
+        "overall score": "overall score 2021"
+
+    }, inplace=True)
+
+    return top_10.columns.tolist()
+
 
 """
 17a.
@@ -664,17 +690,25 @@ Note:
 """
 
 def q17a(top_10):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
-    # return "output/part1-17a.png"
+    top_10.set_index('university', inplace=True)
+    top_10[['overall score 2019', 'overall score 2020', 'overall score 2021']].plot(
+        kind='bar', figsize=(12, 8), alpha=0.8
+    )
+    plt.title("Overall Scores of Top 10 Universities (2019, 2020, 2021)")
+    plt.xlabel("University")
+    plt.ylabel("Overall Score")
+    plt.legend(title="Year")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig("output/part1-17a.png")
+    return "output/part1-17a.png"
 
 """
 17b.
 What do you observe from the plot above? Which university has remained consistent in their scores? Which have increased/decreased over the years?
 
 === ANSWER Q17a BELOW ===
-
+The top three doesn't change very much, the others after the big 3 increase over the years.
 === END OF Q17b ANSWER ===
 """
 
@@ -700,17 +734,30 @@ As the answer to this part, return the name of the plot you saved.
 """
 
 def q18(dfs):
-    # Enter code here
-    # TODO
-    raise NotImplementedError
-    # return "output/part1-18.png"
+    df_2021 = dfs[2]
+    
+    numeric_cols = df_2021.select_dtypes(include='number').columns.tolist()
+    correlation_matrix = df_2021[numeric_cols].corr()
+    
+    plt.close('all') 
+
+    # Plot the correlation matrix
+    plt.figure(figsize=(10, 8))
+    plt.matshow(correlation_matrix, fignum=1, cmap='coolwarm')
+    plt.colorbar()
+    plt.title("Correlation Matrix (2021)", pad=20)
+    plt.xticks(range(len(correlation_matrix.columns)), correlation_matrix.columns, rotation=45, ha='left')
+    plt.yticks(range(len(correlation_matrix.columns)), correlation_matrix.columns)
+    plt.tight_layout()
+    plt.savefig("output/part1-18.png")
+    return "output/part1-18.png"
 
 """
 19. Comment on at least one entry in the matrix you obtained in the previous
 part that you found surprising or interesting.
 
 === ANSWER Q19 BELOW ===
-
+I am interested in how employer reputation and faculty student are correlated (pretty highly too).
 === END OF Q19 ANSWER ===
 """
 
@@ -747,14 +794,18 @@ Use your new column to sort the data by the new values and return the top 10 uni
 """
 
 def q20a(dfs):
-    # TODO
-    raise NotImplementedError
-    # For your answer, return the score for Berkeley in the new column.
-
+    # Assign a high score to "University of California, Berkeley (UCB)" to ensure it ranks first (0 being best)
+    dfs[2]["Proximity To Berkeley"] = abs(dfs[2].loc[dfs[2]["university"] == "University of California, Berkeley (UCB)", "overall score"].iloc[0] - dfs[2]["overall score"])
+    return dfs[2].loc[dfs[2]["university"] == "University of California, Berkeley (UCB)", "Proximity To Berkeley"].iloc[0]
+    
 def q20b(dfs):
-    # TODO
-    raise NotImplementedError
-    # For your answer, return the top 10 university names as a list.
+    # Sort the dataframe by the new column "Proximity To Berkeley" in descending order
+    dfs[2]["Proximity To Berkeley"] = abs(dfs[2].loc[dfs[2]["university"] == "University of California, Berkeley (UCB)", "overall score"].iloc[0] - dfs[2]["overall score"])
+    df_2021 = dfs[2]
+    df_2021_sorted = df_2021.sort_values(by="Proximity To Berkeley", ascending=True)
+    
+    # Return the top 10 university names as a list
+    return df_2021_sorted["university"].head(10).tolist()
 
 """
 21. Exploring data manipulation and falsification, continued
@@ -773,8 +824,14 @@ Return the top 10 university names as a list from the falsified data.
 """
 
 def q21():
-    # TODO
-    raise NotImplementedError
+    falsified_2021 = pd.read_csv("data/2021.csv", encoding="latin-1")
+    falsified_2021["Proximity To Berkeley"] = abs(falsified_2021.loc[falsified_2021["University"] == "University of California, Berkeley (UCB)", "Overall Score"].iloc[0] - falsified_2021["Overall Score"])
+    falsified_2021_sorted = falsified_2021.sort_values(by="Proximity To Berkeley", ascending=True)
+    
+    # Saving falsified_2021
+    falsified_2021_sorted.to_csv("data/2021_falsified.csv", index=False)
+    
+    return falsified_2021_sorted["University"].head(10).tolist()
 
 """
 22. Exploring data manipulation and falsification, continued
@@ -785,7 +842,10 @@ if you were a "bad actor" trying to manipulate the rankings?
 Which do you think would be the most difficult to detect?
 
 === ANSWER Q22 BELOW ===
-
+I think doing some type of encoding of all the (numerical) variables into numbers, adding them up, 
+and then ranking them based off of proximity to berkeley's encoded total number would be the hardest to detect.
+It's most difficult purely because it would be hard to backtrace as to how the user was able to make Berkeley be
+at the top.
 === END OF Q22 ANSWER ===
 """
 

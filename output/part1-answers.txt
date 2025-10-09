@@ -1,7 +1,7 @@
 q1,3
 q2,True
 q3a,False
-q4,['KU Leuven', 'The University of Western Australia', 'University of Southampton', 'National Taiwan University (NTU)', 'University of California, Berkeley (UCB)']
+q4,['University of St Andrews', 'Shanghai Jiao Tong University', 'University of Pennsylvania', 'National Taiwan University (NTU)', 'The Chinese University of Hong Kong (CUHK)']
 q5a,[100, 100, 100, 100, 100, 100, 100, 100]
 q5b,[100, 100, 100, 100, 100, 100, 100, 100]
 q5c,100
@@ -10,15 +10,30 @@ q7,[9, 9, 9]
 q8a,29
 q9,[np.float64(67.041), np.float64(67.68), np.float64(73.539), np.float64(82.147), np.float64(75.504)]
 q10,5
-q11,Not Implemented
-q12,Not Implemented
-q13,Not Implemented
-q14a,Not Implemented
-q15,Not Implemented
-q16,Not Implemented
-q17,Not Implemented
-q18,Not Implemented
-q20a,Not Implemented
-q20b,Not Implemented
-q21,Not Implemented
-PART 1,11
+q11,region                   Singapore
+academic reputation          82.25
+employer reputation           75.3
+faculty student              100.0
+citations per faculty        95.95
+overall score                 91.8
+Name: 13, dtype: object
+q12,Argentina
+q13,output/part1-13a.png
+q14a,output/part1-14a.png
+q15,                                          university  overall score_x  overall score_y  overall score
+0        Massachusetts Institute of Technology (MIT)            100.0            100.0          100.0
+1                                Stanford University             98.6             98.4           98.4
+2                                 Harvard University             98.5             97.4           97.4
+3       California Institute of Technology (Caltech)             97.2             96.9           96.9
+4                               University of Oxford             96.8             97.2           97.2
+5                            University of Cambridge             95.6             95.0           95.0
+6  ETH Zurich - Swiss Federal Institute of Techno...             95.3             95.9           95.9
+7                            Imperial College London             93.3             94.1           94.1
+8                              University of Chicago             93.2             92.0           92.0
+9                                                UCL             92.9             94.8           94.8
+q16,['university', 'overall score 2019', 'overall score 2020', 'overall score 2021']
+q17,output/part1-17a.png
+q18,output/part1-18.png
+q20a,0.0
+q20b,['University of California, Berkeley (UCB)', 'The University of Manchester', 'University of Toronto', 'The Australian National University', 'Northwestern University', 'The University of Hong Kong', 'Duke University', 'Johns Hopkins University', 'The University of Tokyo', 'Peking University']
+q21,['University of California, Berkeley (UCB)', 'The University of Manchester', 'University of Toronto', 'The Australian National University', 'Northwestern University', 'The University of Hong Kong', 'Duke University', 'Johns Hopkins University', 'The University of Tokyo', 'Peking University']

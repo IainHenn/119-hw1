@@ -10,6 +10,8 @@ to report which one is faster.
 """
 
 import part1
+import time
+import matplotlib.pyplot as plt
 
 """
 === Questions 1-5: Throughput and Latency Helpers ===
@@ -57,23 +59,39 @@ class ThroughputHelper:
         self.throughputs = None
 
     def add_pipeline(self, name, size, func):
-        raise NotImplementedError
+        self.names.append(name)
+        self.sizes.append(size)
+        self.pipelines.append(func)
 
     def compare_throughput(self):
+        self.throughputs = []
+        
         # Measure the throughput of all pipelines
-        # and store it in a list in self.throughputs.
-        # Make sure to use the NUM_RUNS variable.
-        # Also, return the resulting list of throughputs,
-        # in **number of items per second.**
-        raise NotImplementedError
+        for i in range(0,len(self.pipelines)):
+            # Calculate total time
+            start_time = time.perf_counter()
+            for _ in range(NUM_RUNS):
+                self.pipelines[i](self.sizes[i])
+            end_time = time.perf_counter()
+            
+            # Append to throughput
+            self.throughputs.append((NUM_RUNS * len(self.sizes[i])) / (end_time - start_time))
+        
+        print(f"self.throughputs: {self.throughputs}")
+        return self.throughputs
 
     def generate_plot(self, filename):
         # Generate a plot for throughput using matplotlib.
-        # You can use any plot you like, but a bar chart probably makes
-        # the most sense.
-        # Make sure you include a legend.
-        # Save the result in the filename provided.
-        raise NotImplementedError
+        plt.figure(figsize=(10, 6))
+        plt.bar(self.names, self.throughputs, color='skyblue')
+        plt.xlabel('Pipelines')
+        plt.ylabel('Throughput (runs per second)')
+        plt.title('Throughput Comparison Across Pipelines')
+        plt.xticks(rotation=45, ha='right')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
 
 """
 As your answer to this part,
@@ -84,8 +102,7 @@ matplotlib.
 """
 
 def q1():
-    # Return plot method (as a string) from matplotlib
-    raise NotImplementedError
+    return "barplot"
 
 """
 2. A simple test case
@@ -102,22 +119,26 @@ LIST_MEDIUM = [10] * 100_000
 LIST_LARGE = [10] * 100_000_000
 
 def add_list(l):
-    # TODO
-    # Please use a for loop (not a built-in)
-    raise NotImplementedError
+    total = 0
+    for i in l:
+        total += i
 
 def q2a():
     # Create a ThroughputHelper object
     h = ThroughputHelper()
-    # Add the 3 pipelines.
-    # (You will need to create a pipeline for each one.)
-    # Pipeline names: small, medium, large
-    raise NotImplementedError
-    # Generate a plot.
-    # Save the plot as 'output/part2-q2a.png'.
-    # TODO
-    # Finally, return the throughputs as a list.
-    # TODO
+    
+    # Adding pipelines
+    h.add_pipeline("small", LIST_SMALL, add_list)
+    h.add_pipeline("medium", LIST_MEDIUM, add_list)
+    h.add_pipeline("large", LIST_LARGE, add_list)
+    
+    # Returning throughputs
+    throughputs = h.compare_throughput()
+    
+    # Generating plot 'output/part2-q2a.png'
+    h.generate_plot('output/part2-q2a.png')
+    
+    return throughputs
 
 """
 2b.
@@ -125,7 +146,7 @@ Which pipeline has the highest throughput?
 Is this what you expected?
 
 === ANSWER Q2b BELOW ===
-
+Medium had the highest throughput, this is NOT what I expected.
 === END OF Q2b ANSWER ===
 """
 
@@ -158,22 +179,37 @@ class LatencyHelper:
         self.latencies = None
 
     def add_pipeline(self, name, func):
-        raise NotImplementedError
+        self.names.append(name)
+        self.pipelines.append(func)
 
     def compare_latency(self):
+        self.latencies = []
+        
         # Measure the latency of all pipelines
-        # and store it in a list in self.latencies.
-        # Also, return the resulting list of latencies,
-        # in **milliseconds.**
-        raise NotImplementedError
+        for i in range(0,len(self.pipelines)):
+            # Calculate total time
+            start_time = time.time()
+            for _ in range(NUM_RUNS):
+                self.pipelines[i]([10])
+            end_time = time.time()
+            
+            # Append to latency
+            self.latencies.append((end_time - start_time) * 1000)
+        
+        return self.latencies
 
     def generate_plot(self, filename):
-        # Generate a plot for latency using matplotlib.
-        # You can use any plot you like, but a bar chart probably makes
-        # the most sense.
-        # Make sure you include a legend.
-        # Save the result in the filename provided.
-        raise NotImplementedError
+        # Generate a plot for throughput using matplotlib.
+        plt.figure(figsize=(10, 6))
+        plt.bar(self.names, self.latencies, color='skyblue')
+        plt.xlabel('Pipelines')
+        plt.ylabel('Latency (Ms)')
+        plt.title('Latency Comparison Across Pipelines')
+        plt.xticks(rotation=45, ha='right')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
 
 """
 As your answer to this part,
@@ -182,9 +218,7 @@ process if the class is used correctly.
 """
 
 def q3():
-    # Return the number of input items in each dataset,
-    # for the latency helper to run correctly.
-    raise NotImplementedError
+    return [100, 100_000, 100_000_000]
 
 """
 4. To make sure your monitor is working, test it on
@@ -203,12 +237,16 @@ def q4a():
     # Create a LatencyHelper object
     h = LatencyHelper()
     # Add the single pipeline three times.
-    raise NotImplementedError
-    # Generate a plot.
-    # Save the plot as 'output/part2-q4a.png'.
-    # TODO
-    # Finally, return the latencies as a list.
-    # TODO
+    h.add_pipeline("LIST_SINGLE_ITEM1", add_list)
+    h.add_pipeline("LIST_SINGLE_ITEM2", add_list)
+    h.add_pipeline("LIST_SINGLE_ITEM3", add_list)
+    
+    latencies = h.compare_latency()
+    
+    # Generate a plot as 'output/part2-q4a.png' 
+    h.generate_plot('output/part2-q4a.png')
+    
+    return latencies
 
 """
 4b.
@@ -216,7 +254,7 @@ How much did the latency vary between the three copies of the pipeline?
 Is this more or less than what you expected?
 
 === ANSWER Q4b BELOW ===
-
+Not very much to be honest, I expected this because its processing the same data so it should take about the same time.
 === END OF Q4b ANSWER ===
 """
 
@@ -236,13 +274,26 @@ of the pipeline in part 1.
 # part1.load_input
 # part1.PART_1_PIPELINE
 
+
 def q5a():
     # Return the throughput of the pipeline in part 1.
-    raise NotImplementedError
+    h = ThroughputHelper()
+    dfs = part1.load_input()
+
+    h.add_pipeline(f"PART_1_PIPELINE", 
+                   dfs[0].values.tolist() + dfs[1].values.tolist() + dfs[2].values.tolist(), 
+                   lambda _: part1.PART_1_PIPELINE()
+    )
+    
+    throughput = h.compare_throughput()
+    return throughput
 
 def q5b():
     # Return the latency of the pipeline in part 1.
-    raise NotImplementedError
+    h = LatencyHelper()
+    h.add_pipeline("PART_1_PIPELINE", lambda _: part1.PART_1_PIPELINE())
+    latency = h.compare_latency()
+    return latency
 
 """
 ===== Questions 6-10: Performance Comparison 1 =====

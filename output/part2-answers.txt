@@ -1,0 +1,18 @@
+q1,barplot
+q2a,[37878499.45320492, 48495429.922994316, 49255962.821782604]
+q3,[100, 100000, 100000000]
+q4a,[0.0069141387939453125, 0.002384185791015625, 0.0019073486328125]
+q5a,[299.4326350453791]
+q5b,[9999.504327774048]
+q6,Not Implemented
+q7,Not Implemented
+q8,Not Implemented
+q9a,Not Implemented
+q9b,Not Implemented
+q11,Not Implemented
+q12,Not Implemented
+q13a,Not Implemented
+q13b,Not Implemented
+extra credit (a),Not Implemented
+extra credit (b),Not Implemented
+PART 2,11
