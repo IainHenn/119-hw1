@@ -41,6 +41,7 @@ get uploaded when you submit.
 
 # You may need to conda install requests or pip3 install requests
 import requests
+import subprocess
 
 def download_file(url, filename):
     r = requests.get(url)
@@ -48,25 +49,29 @@ def download_file(url, filename):
         f.write(r.content)
 
 def clone_repo(repo_url):
-    # TODO
-    raise NotImplementedError
+    subprocess.run(["git", "clone", repo_url], check=True)
 
 def run_script(script_path, data_path):
-    # TODO
-    raise NotImplementedError
+    subprocess.run(["python", script_path, data_path], check=True)
 
 def setup(repo_url, data_url, script_path):
-    # TODO
-    raise NotImplementedError
+    download_file(data_url, "output/test-input.txt")
+    clone_repo(repo_url)
+    run_script(script_path, "output/test-input.txt")
 
 def q1():
     # Call setup as described in the prompt
-    # TODO
+    setup(
+        "https://github.com/DavisPL-Teaching/119-hw1",
+        "https://raw.githubusercontent.com/DavisPL-Teaching/119-hw1/refs/heads/main/data/test-input.txt",
+        "test-script.py"
+    )
     # Read the file test-output.txt to a string
     # TODO
-    # Return the integer value of the output
-    # TODO
-    raise NotImplementedError
+    with open("output/test-output.txt", "r") as file:
+        text = file.read()
+        # Return the integer value of the output
+        return int(text)
 
 """
 2.
@@ -78,13 +83,16 @@ a. When might you need to use a script like setup() above in
 this scenario?
 
 === ANSWER Q2a BELOW ===
-
+You might want a script like setup() for re-running and re-fetching
+the latest data for the latest analysis.
 === END OF Q2a ANSWER ===
 
 Do you see an alternative to using a script like setup()?
 
 === ANSWER Q2b BELOW ===
-
+I see something like a CRON job or even like a automated DAG script using 
+airflow or dagster as a solution instead of having a scientist/engineer
+constantly rerunning the same script, this would automate the process for them.
 === END OF Q2b ANSWER ===
 
 3.
@@ -125,17 +133,21 @@ any packages?
 """
 
 def setup_for_new_machine():
-    # TODO
-    raise NotImplementedError
+    # Install required packages from requirements.txt --> holds all libraries used for this assignment
+    subprocess.run(["pip3", "install", "-r", "requirements.txt"], check=True)
+    
+    # Call the setup function with the required arguments
+    setup(
+        "https://github.com/DavisPL-Teaching/119-hw1",
+        "https://raw.githubusercontent.com/DavisPL-Teaching/119-hw1/refs/heads/main/data/test-input.txt",
+        "test-script.py"
+    )
 
 def q3():
     # As your answer, return a string containing
     # the operating system name that you assumed the
     # new machine to have.
-    # TODO
-    raise NotImplementedError
-    # os =
-    return os
+    return "Linux_or_windows...?"
 
 """
 4. This question is open ended :)
@@ -147,7 +159,7 @@ scripts like setup() and setup_for_new_machine()
 in their day-to-day jobs?
 
 === ANSWER Q4 BELOW ===
-
+Most likely 10-15% of the time.
 === END OF Q4 ANSWER ===
 
 5.
@@ -164,7 +176,9 @@ If you don't have a friend's machine, please speculate about
 what might happen if you tried. You can guess.
 
 === ANSWER Q5 BELOW ===
-
+If I had to make a calculated guess, I believe it'd most likely fail.
+This is what makes docker so good because it replicates what you did 1-to-1 
+with whoever is using the docker file, minimizing the chance of an error happening to 0.
 === END OF Q5 ANSWER ===
 
 ===== Questions 6-9: A comparison of shell vs. Python =====
@@ -177,6 +191,7 @@ Let's import the part2 module:
 
 import part2
 import pandas as pd
+import subprocess
 
 """
 Write two versions of a script that takes in the population.csv
