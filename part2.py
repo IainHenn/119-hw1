@@ -14,6 +14,7 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import numpy as np
 
 """
 === Questions 1-5: Throughput and Latency Helpers ===
@@ -497,36 +498,46 @@ b. Generate a plot in output/part2-q9b.png of the latencies
     baseline_latency, fromvar_latency
 """
 
-# TODO
-# POPULATION_SMALL =
-# POPULATION_MEDIUM =
-# POPULATION_LARGE =
-# POPULATION_SINGLE_ROW =
+POPULATION_SMALL = load_input_small()
+POPULATION_MEDIUM = load_input_medium()
+POPULATION_LARGE = load_input_large()
+POPULATION_SINGLE_ROW = load_input_single_row()
 
 def fromvar_small():
-    raise NotImplementedError
+    population_pipeline(POPULATION_SMALL)
 
 def fromvar_medium():
-    raise NotImplementedError
+    population_pipeline(POPULATION_MEDIUM)
 
 def fromvar_large():
-    raise NotImplementedError
+    population_pipeline(POPULATION_LARGE)
 
 def fromvar_latency():
-    raise NotImplementedError
+    return baseline_latency()
 
 def q9a():
     # Add all 6 pipelines for a throughput comparison
-    # Generate plot in ouptut/q9a.png
-    # Return list of 6 throughputs
-    raise NotImplementedError
+    h = ThroughputHelper()
+    h.add_pipeline("baseline_small", POPULATION_SMALL, lambda _: baseline_small())
+    h.add_pipeline("baseline_medium", POPULATION_MEDIUM, lambda _: baseline_medium())
+    h.add_pipeline("baseline_large", POPULATION_LARGE, lambda _: baseline_large())
+    h.add_pipeline("fromvar_small", POPULATION_SMALL, lambda _: fromvar_small())
+    h.add_pipeline("fromvar_medium", POPULATION_MEDIUM, lambda _: fromvar_medium())
+    h.add_pipeline("fromvar_large", POPULATION_LARGE, lambda _: fromvar_large())
+    throughputs = h.compare_throughput()
+    h.generate_plot('output/part2-q9a.png')
+    return throughputs
 
 def q9b():
     # Add 2 pipelines for a latency comparison
     # Generate plot in ouptut/q9b.png
     # Return list of 2 latencies
-    raise NotImplementedError
-
+    h = LatencyHelper()
+    h.add_pipeline("baseline_small", lambda _: baseline_small())
+    h.add_pipeline("fromvar_small", lambda _: fromvar_small())
+    latencies = h.compare_latency()
+    h.generate_plot('output/part2-q9b.png')
+    return latencies
 """
 10.
 Comment on the plots above!
@@ -535,7 +546,10 @@ Which differs more, throughput or latency?
 What does this experiment show?
 
 ===== ANSWER Q10 BELOW =====
-
+The difference is huge, and I'd argue that throughput and latency differ
+equally in terms of performance boosts using a variable.
+This experiment shows that storing it in a variable typically leads to higher throughput
+and lower latency.
 ===== END OF Q10 ANSWER =====
 """
 
@@ -567,15 +581,56 @@ Create a new pipeline:
 """
 
 def for_loop_pipeline(df):
-    # Input: the dataframe from load_input()
-    # Return a list of min, median, max, mean, and standard deviation
-    raise NotImplementedError
+
+   # Manually computing min/max year for each country
+    country_min_max = {}
+    for _, row in df.iterrows():
+        country = row["Entity"]
+        year = row["Year"]
+        pop = row["Population (historical)"]
+        
+        if country in country_min_max.keys():
+            
+            # Update min year
+            if country_min_max[country].get('min', None) >= year:
+                country_min_max[country]['min'] = year
+            
+            # Update max year
+            elif country_min_max[country].get('max', None) <= year:
+                country_min_max[country]['max'] = year
+        
+        # If country isn't in yet, update year
+        else:
+            country_min_max[country] = {'min': year, 'max': year}
+
+    # Gathering all years for statistics
+    all_years = []
+    for _, row in df.iterrows():
+        all_years.append(row['Year'])
+
+    # Calculate statistics manually
+    sorted_years = sorted(all_years)
+    n = len(sorted_years)
+    min_year = sorted_years[0]
+    max_year = sorted_years[-1]
+    mean_year = sum(sorted_years) / n
+
+    if n % 2 == 1:
+        median_year = sorted_years[n // 2]
+    else:
+        median_year = (sorted_years[n // 2 - 1] + sorted_years[n // 2]) / 2
+
+    mean_diff_sq = [(y - mean_year) ** 2 for y in sorted_years]
+    std_year = (sum(mean_diff_sq) / n) ** 0.5
+
+    return [min_year, median_year, max_year, mean_year, std_year]
+
 
 def q11():
     # As your answer to this part, call load_input() and then
+    df = load_input("data/population.csv")
     # for_loop_pipeline() to return the 5 numbers.
-    # (these should match the numbers you got in Q6.)
-    raise NotImplementedError
+    for_loop_pipeline(df)
 
 """
 12.
@@ -585,16 +640,21 @@ As before, write 4 pipelines based on the datasets from Q7.
 """
 
 def for_loop_small():
-    raise NotImplementedError
+    df = load_input_small()
+    return for_loop_pipeline(df)
 
 def for_loop_medium():
-    raise NotImplementedError
+    df = load_input_medium()
+    return for_loop_pipeline(df)
 
 def for_loop_large():
-    raise NotImplementedError
+    df = load_input_large()
+    return for_loop_pipeline(df)
 
 def for_loop_latency():
-    raise NotImplementedError
+    df = load_input("data/population.csv")
+    df = df.head(2)
+    return population_pipeline(df)
 
 def q12():
     # Don't modify this part
@@ -617,15 +677,25 @@ b. Generate a plot in output/part2-q13b.png of the latencies
 
 def q13a():
     # Add all 6 pipelines for a throughput comparison
-    # Generate plot in ouptut/q13a.png
-    # Return list of 6 throughputs
-    raise NotImplementedError
+    h = ThroughputHelper()
+    h.add_pipeline("baseline_small", POPULATION_SMALL, lambda _: baseline_small())
+    h.add_pipeline("baseline_medium", POPULATION_MEDIUM, lambda _: baseline_medium())
+    h.add_pipeline("baseline_large", POPULATION_LARGE, lambda _: baseline_large())
+    h.add_pipeline("for_loop_small", POPULATION_SMALL, lambda _: for_loop_small())
+    h.add_pipeline("for_loop_medium", POPULATION_MEDIUM, lambda _: for_loop_medium())
+    h.add_pipeline("for_loop_large", POPULATION_LARGE, lambda _: for_loop_large())
+    throughputs = h.compare_throughput()
+    h.generate_plot('output/part2-q13a.png')
+    return throughputs
 
 def q13b():
     # Add 2 pipelines for a latency comparison
-    # Generate plot in ouptut/q13b.png
-    # Return list of 2 latencies
-    raise NotImplementedError
+    h = LatencyHelper()
+    h.add_pipeline("baseline_latency", lambda _: baseline_latency())
+    h.add_pipeline("for_loop_latency", lambda _: for_loop_latency())
+    latencies = h.compare_latency()
+    h.generate_plot('output/part2-q13b.png')
+    return latencies
 
 """
 14.
@@ -634,20 +704,23 @@ Comment on the results you got!
 14a. Which pipelines is faster in terms of throughput?
 
 ===== ANSWER Q14a BELOW =====
-
+The baseline pipeline is MUCH faster than the for loop pipeline.
 ===== END OF Q14a ANSWER =====
 
 14b. Which pipeline is faster in terms of latency?
 
 ===== ANSWER Q14b BELOW =====
-
+They're actually almost exactly similar in terms of latency.
 ===== END OF Q14b ANSWER =====
 
 14c. Do you notice any other interesting observations?
 What does this experiment show?
 
 ===== ANSWER Q14c BELOW =====
-
+I did notice that throughput does increase for the baseline pipeline as data grows
+but this makes sense because there's more data to be processed in a certain amount of time.
+I did find that latency being similar between the for loop and baseline pipeline was interesting,
+I guess this experiment shows the power of pandas, pandas performed really well.
 ===== END OF Q14c ANSWER =====
 """
 
@@ -660,7 +733,9 @@ Which factor that we tested (file vs. variable, vectorized vs. for loop)
 had the biggest impact on performance?
 
 ===== ANSWER Q15 BELOW =====
-
+I think the variable had the biggest impact on performance, 
+but I will say that file vs. variable and vectorized vs. for loop both
+showed a similar (massive) difference in the graphs.
 ===== END OF Q15 ANSWER =====
 
 16.
@@ -671,7 +746,9 @@ varies with the size of the input dataset.
 This is an open ended question.)
 
 ===== ANSWER Q16 BELOW =====
-
+Based on my plots, I'm going to say that throughput naturally increases
+as the size of the data increases, I can use ALL of my graphs to show
+this as this trend is always shown in each of my stored graphs.
 ===== END OF Q16 ANSWER =====
 
 17.
@@ -682,7 +759,9 @@ throughput is related to latency.
 This is an open ended question.)
 
 ===== ANSWER Q17 BELOW =====
-
+I'm going to hypothesize that throughput and latency are inversely correlated, 
+it seems as though when latency is low, throughput is high, part2 question 13 graphs
+really highlight this the best.
 ===== END OF Q17 ANSWER =====
 """
 
