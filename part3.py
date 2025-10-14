@@ -236,20 +236,22 @@ with:
 """
 
 def pipeline_shell():
-    # TODO
-    raise NotImplementedError
-    # Return resulting integer
+    import os
+    # Use shell commands to count the number of rows in population.csv, skipping the header
+    output = os.popen("cat data/population.csv | tail -n +2 | wc -l").read()
+    return int(output.strip())
 
 def pipeline_pandas():
-    # TODO
-    raise NotImplementedError
-    # Return resulting integer
+    df = pd.read_csv("data/population.csv")
+    return len(df)
 
 def q6():
     # As your answer to this part, check that both
     # integers are the same and return one of them.
-    # TODO
-    raise NotImplementedError
+    result1 = pipeline_shell()
+    result2 = pipeline_pandas()
+    if result1 == result2:
+        return result1
 
 """
 Let's do a performance comparison between the two methods.
@@ -266,9 +268,15 @@ Additionally, generate a plot and save it in
 def q7():
     # Return a list of two floats
     # [throughput for shell, throughput for pandas]
+    df = pd.read_csv("data/population.csv")
+
+    h = part2.ThroughputHelper()
+    h.add_pipeline("PIPELINE_SHELL", df, lambda _: pipeline_shell)
+    h.add_pipeline("PIPELINE_PANDAS", df, lambda _: pipeline_pandas)
+    result = h.compare_throughput()
+    h.generate_plot("output/part3-q7.png")
     # (in rows per second)
-    # TODO
-    raise NotImplementedError
+    return result
 
 """
 8. Latency
@@ -285,16 +293,20 @@ Additionally, generate a plot and save it in
 def q8():
     # Return a list of two floats
     # [latency for shell, latency for pandas]
+    h = part2.LatencyHelper()
+    h.add_pipeline("PIPELINE_SHELL", lambda _: pipeline_shell)
+    h.add_pipeline("PIPELINE_PANDAS", lambda _: pipeline_pandas)
+    result = h.compare_latency()
+    h.generate_plot("output/part3-q8.png")
     # (in milliseconds)
-    # TODO
-    raise NotImplementedError
+    return result
 
 """
 9. Which method is faster?
 Comment on anything else you notice below.
 
 === ANSWER Q9 BELOW ===
-
+The pandas one was faster, latency was arguably about 1/3 of the non-pandas one.
 === END OF Q9 ANSWER ===
 """
 
