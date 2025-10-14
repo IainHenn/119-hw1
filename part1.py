@@ -649,7 +649,7 @@ def q15_helper(dfs):
     return top_10.iloc[0:10]
 
 def q15(top_10):
-    return top_10
+    return top_10.shape
 
 """
 16.
@@ -707,7 +707,7 @@ def q17a(top_10):
 17b.
 What do you observe from the plot above? Which university has remained consistent in their scores? Which have increased/decreased over the years?
 
-=== ANSWER Q17a BELOW ===
+=== ANSWER Q17b BELOW ===
 The top three doesn't change very much, the others after the big 3 increase over the years.
 === END OF Q17b ANSWER ===
 """
